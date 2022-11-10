@@ -1,0 +1,8 @@
+1,peras,0.25
+2,manzanas,0.25
+3,melocoton,0.25
+4,melon,0.50
+5,sandia,1.00
+6,aguacate,0.50
+7,queso,2.00
+8,yogurt,0.75

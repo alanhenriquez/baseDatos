@@ -1,0 +1,6 @@
+1,Alan,Henriquez,2000-04-27,1
+2,Melina,Norelia,2000-03-18,2
+3,Lucrecia,Monterrosa,2000-02-02,3
+4,Giovanni,Henriquez,2001-06-04,4
+5,Dave,Henriquez,2001-09-12,5
+6,Fernando,Monterrosa,2001-04-11,6
