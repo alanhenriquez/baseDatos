@@ -1,0 +1,126 @@
+
+***Codigo para iniciar las tablas****************************************************************************
+CREATE TABLE producto(idProducto INT(20), producto VARCHAR(20), precio DOUBLE);
+CREATE TABLE factura(sucursal VARCHAR(20), prIDFactura INT(20), userIDFactura INT(20));
+CREATE TABLE detalle(id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT, precioU DOUBLE, cantidad INT(20), proIDDetalle INT(20), userIDDetalle INT(20));
+CREATE TABLE cliente(id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT, nombre VARCHAR(20), apellido VARCHAR(20), fechaN DATE, userID INT(20));
+
+
+***Codigo para cargar los datos desde consola MariaDB******************************************************** 
+LOAD DATA LOCAL INFILE "C:/Users/Alan Derek/Desktop/Ciclo-4/Administracion--Base-de-Datos/Base-datos/cliente.txt" INTO TABLE cliente FIELDS TERMINATED BY ',' LINES TERMINATED BY '\r\n';
+LOAD DATA LOCAL INFILE "C:/Users/Alan Derek/Desktop/Ciclo-4/Administracion--Base-de-Datos/Base-datos/detalle.txt" INTO TABLE detalle FIELDS TERMINATED BY ',' LINES TERMINATED BY '\r\n';
+LOAD DATA LOCAL INFILE "C:/Users/Alan Derek/Desktop/Ciclo-4/Administracion--Base-de-Datos/Base-datos/factura.txt" INTO TABLE factura FIELDS TERMINATED BY ',' LINES TERMINATED BY '\r\n';
+LOAD DATA LOCAL INFILE "C:/Users/Alan Derek/Desktop/Ciclo-4/Administracion--Base-de-Datos/Base-datos/producto.txt" INTO TABLE producto FIELDS TERMINATED BY ',' LINES TERMINATED BY '\r\n';
+
+
+***Mostrar los datos de las tablas******************************************************** 
+SELECT * FROM cliente;
+SELECT * FROM detalle;
+SELECT * FROM factura;
+SELECT * FROM producto;
+
+
+***Codigo para eliminar tabla en rango con BETWEEN***********************************************************
+DELETE FROM nombreTabla WHERE campo BETWEEN dato AND dato;
+
+
+***Ejemplo de procedimiento almacenado***********************************************************************
+CREATE PROCEDURE saveProducto(idProducto INT(20), producto VARCHAR(20), precio DOUBLE) INSERT INTO producto(idProducto, producto, precio) VALUES(idProducto, producto, precio);
+CREATE PROCEDURE saveFactura(sucursal VARCHAR(20), prIDFactura INT(20), userIDFactura INT(20)) INSERT INTO factura(sucursal, prIDFactura, userIDFactura) VALUES(sucursal, prIDFactura, userIDFactura);
+CREATE PROCEDURE saveDetalle(precioU DOUBLE, cantidad INT(20), proIDDetalle INT(20), userIDDetalle INT(20)) INSERT INTO detalle(precioU, cantidad, proIDDetalle, userIDDetalle) VALUES(precioU, cantidad, proIDDetalle, userIDDetalle); 
+CREATE PROCEDURE saveCliente(nombre VARCHAR(20), apellido VARCHAR(20), fechaN DATE, userID INT(20)) INSERT INTO cliente(nombre, apellido, fechaN, userID) VALUES(nombre, apellido, fechaN, userID); 
+CREATE PROCEDURE mostrarVentas(ciudad VARCHAR(20), maximo INT(20), fechaNF DATE) SELECT nombre,sucursal,precioU * cantidad AS total FROM detalle,factura,cliente WHERE cliente.userID = detalle.userIDDetalle AND cliente.userID = factura.userIDFactura AND fechaN <= fechaNF AND sucursal = ciudad; 
+
+
+***Datos que recuperamos en cada una*************************************************************************
+saveProducto(idProducto, producto, precio)
+saveFactura(sucursal, prIDFactura, userIDFactura)
+saveDetalle(precioU, cantidad, proIDDetalle, userIDDetalle)
+saveCliente(nombre, apellido, fechaN, userID)
+mostrarVentas(ciudad, maximo, fechaNF)
+
+
+***Llamamos el procedimiento almacenado
+CALL saveProducto(9,"kiwi",0.40);
+CALL saveFactura("usu",9,7);
+CALL saveDetalle(0.40,2,9,7);
+CALL saveCliente("Nicolas","Manrrique","2000-07-11",7);
+CALL mostrarVentas("ss",1000,"2000-04-27");
+
+
+***Mostrar el procedimiento almacenado:
+SHOW PROCEDURE STATUS WHERE Db = "nombre de Database"\G;
+
+
+***Ejemplo de Funciones***************************************************************************************
+SELECT holaMundo("hola mundo"); CREATE FUNCTION holaMundo(entrada VARCHAR(20)) RETURNS VARCHAR(20) BEGIN DECLARE salida VARCHAR(20); SET salida = entrada; RETURN salida; END//
+SELECT suma(5,7); CREATE FUNCTION suma(p int, s int) RETURNS INT BEGIN DECLARE salida INT; SET salida = p + s; RETURN salida; END//
+
+
+***Ejemplo de triggers****************************************************************************************
+
+//COMIENZA EL EJEMPLO//
+
+-----------------------------------------------
+* Es en esta tabla, es que vamos a almacenar  |
+ cada cambio que se registre en la tabla      |
+ especificada.                                |
+-----------------------------------------------
+
+CREATE TABLE accionA ( id INT NOT NULL AUTO_INCREMENT, nombre VARCHAR(250) NOT NULL, PRIMARY KEY (id));
+
+-----------------------------------------------
+* Ahora creamos el trigger que se ejecutara   |
+ cada momento en que se agregue un nuevo      |
+ cliente en la tabla cliente.                 |
+-----------------------------------------------
+
+DELIMITER // CREATE TRIGGER registra_acciones AFTER INSERT ON cliente FOR EACH ROW BEGIN INSERT INTO accionA (nombre) VALUES (concat ('se ha creado nuevo cliente')); end; // delimiter;
+
+-----------------------------------------------
+* Para que el trigger funcione agregaremos un |
+ nuevo cliente mediante el llamado de nuestro |
+ procedimiento almacenado saveCliente().      |
+-----------------------------------------------
+
+CALL saveCliente("Nicolas","Manrrique","2000-07-11",7);
+
+------------------------------------------------
+* Una vez hecho seleccionamos la tabla cliente |
+ para ver el nuevo cambio producido al agregar |
+ ese nuevo cliente.                            |
+------------------------------------------------
+
+SELECT * FROM cliente;
+
+-----------------------------------------------
+* Ahora simplemente, al seleccionar la tabla  |
+ accionA, veremos el mensaje que habiamos     |
+ estipulado, dando por finalizado el ejemplo. |
+-----------------------------------------------
+
+SELECT * FROM accionA;
+
+//TERMINA EL EJEMPLO//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
